@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Carte des événements à Paris</title>
+    <meta charset="utf-8" />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css"/>
+    <style>
+        #map { height: 600px; width: 100%; }
+        body { font-family: Arial, sans-serif; margin: 20px; }
+    </style>
+</head>
+<body>
+    <h2>Événements à Paris</h2>
+    <div id="map"></div>
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+    <script>
+        // Initialise la carte centrée sur Paris
+        const map = L.map('map').setView([48.8566, 2.3522], 12);
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '© OpenStreetMap contributors'
+        }).addTo(map);
+
+        // Charge les événements depuis le fichier JSON
+        fetch('events_map.json')
+            .then(response => response.json())
+            .then(events => {
+                events.forEach(e => {
+                    if(e.latitude && e.longitude){
+                        L.marker([e.latitude, e.longitude]).addTo(map)
+                         .bindPopup(`<b>${e.title}</b><br>${e.address_name || ''}<br>${e.description || ''}`);
+                    }
+                });
+            })
+            .catch(error => {
+                console.error('Erreur lors du chargement de events_map.json:', error);
+            });
+    </script>
+</body>
+</html>
+
